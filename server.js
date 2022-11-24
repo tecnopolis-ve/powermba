@@ -1,5 +1,5 @@
 const express = require("express");
-const public = require('./routes/public');
+const open = require('./routes/open');
 
 const app = express();
 const port = 3000;
@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // entry points
-app.use("/", public);
+app.use("/", open);
 
 app.listen(port, () => {
     console.log(`Escuchando en http://localhost:${port}`);
