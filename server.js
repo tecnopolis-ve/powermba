@@ -1,8 +1,9 @@
 const express = require("express");
 const open = require('./routes/open');
+const config = require("./config/config.js");
 
 const app = express();
-const port = 3000;
+const port = config.port;
 
 // init server
 app.use(express.urlencoded({ extended: true }));
