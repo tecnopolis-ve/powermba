@@ -9,7 +9,6 @@ const transactionSchema = new mongoose.Schema(
         },
         amount: String,
         concept: String,
-        date: Date,
     },
     { timestamps: true }
 );
