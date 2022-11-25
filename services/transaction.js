@@ -21,10 +21,39 @@ async function list() {
 
 async function get(id) {
     try {
+        const result = await Transaction.findById(id);
         return {
             status: 200,
             body: {
-                message: `User created!`,
+                result,
+            },
+        };
+    } catch (e) {
+        console.log(e);
+        return {
+            status: 500,
+            body: {
+                message: "Error!",
+            },
+        };
+    }
+}
+
+async function create(transaction) {
+    try {
+        const user = transaction.user;
+        const item = new Transaction({
+            userId: user.id,
+            destinationUser: transaction.destinationUser,
+            amount: transaction.amount,
+            concept: transaction.concept,
+        });
+        const result = await item.save();
+        return {
+            status: 200,
+            body: {
+                message: `Transaction created!`,
+                data: result.toObject(),
             },
         };
     } catch (e) {
@@ -41,4 +70,5 @@ async function get(id) {
 module.exports = {
     list,
     get,
+    create,
 };

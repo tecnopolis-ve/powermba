@@ -1,13 +1,14 @@
 const Connection = require("../models/Connection");
+const User = require("../models/User");
 
-async function list() {
+async function list(payload) {
     try {
-        const data = await Connection.find({ name: 'john', age: { $gte: 18 } }).exec();
+        const user = payload.user;
+        const result = await Connection.find({ userId: user.id }).exec();
         return {
             status: 200,
             body: {
-                message: `User created!`,
-                data
+                result,
             },
         };
     } catch (e) {
@@ -23,10 +24,11 @@ async function list() {
 
 async function get(id) {
     try {
+        const result = await Connection.findById(id);
         return {
             status: 200,
             body: {
-                message: `User created!`,
+                result,
             },
         };
     } catch (e) {
@@ -40,24 +42,45 @@ async function get(id) {
     }
 }
 
-async function create() {
+async function create(connection) {
     try {
-        const connection = new Connection({
-            userId,
+        const user = connection.user;
+        const contactUser = await User.findOne({
+            accountNumber: connection.accountNumber,
+        });
+        const item = new Connection({
+            userId: user.id,
             contactUser,
         });
-        const saved = await connection.save();
+        const result = await item.save();
         return {
             status: 200,
             body: {
-                message: `User created!`,
-                data: saved.toObject(),
+                message: `Connection created!`,
+                data: result.toObject(),
             },
         };
+    } catch (e) {
+        console.log(e);
+        return {
+            status: 500,
+            body: {
+                message: "Error!",
+            },
+        };
+    }
+}
+
+async function update(id, connection) {
+    try {
+        const result = await Connection.findByIdAndUpdate(id, {
+            status: connection.status,
+        });
         return {
             status: 200,
             body: {
-                message: `User created!`,
+                message: `Connection created!`,
+                data: result,
             },
         };
     } catch (e) {
@@ -73,10 +96,12 @@ async function create() {
 
 async function remove(id) {
     try {
+        const result = await Connection.deleteOne({ id });
         return {
             status: 200,
             body: {
-                message: `User created!`,
+                message: `Connection created!`,
+                data: result,
             },
         };
     } catch (e) {
@@ -113,6 +138,7 @@ module.exports = {
     list,
     get,
     create,
+    update,
     remove,
     findByAccountId,
 };
