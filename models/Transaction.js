@@ -2,13 +2,21 @@ const mongoose = require("mongoose");
 
 const transactionSchema = new mongoose.Schema(
     {
-        userId: mongoose.Types.ObjectId,
+        userId: {
+            type: mongoose.Types.ObjectId,
+        },
         destinationUser: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
+            required: true,
         },
-        amount: String,
-        concept: String,
+        amount: {
+            type: Number,
+            required: true,
+        },
+        concept: {
+            type: String,
+        },
     },
     { timestamps: true }
 );

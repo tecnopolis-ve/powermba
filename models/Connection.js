@@ -2,12 +2,17 @@ const mongoose = require("mongoose");
 
 const connectionSchema = new mongoose.Schema(
     {
-        userId: mongoose.Types.ObjectId,
-        contactUser: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+        userId: {
+            type: mongoose.Types.ObjectId,
         },
-        status: String,
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        status: {
+            type: String,
+        },
     },
     { timestamps: true }
 );
