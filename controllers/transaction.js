@@ -1,25 +1,26 @@
-const admin = require("../services/transaction");
+const transaction = require("../services/transaction");
 
-async function create(id) {
+async function get(req, res, next) {
     try {
-        const result = null;
-        return {
-            status: 200,
-            body: {
-                result,
-            },
-        };
+        const get = await transaction.get(req.params.id);
+        res.status(get.status).json(get.body);
     } catch (e) {
-        console.log(e);
-        return {
-            status: 500,
-            body: {
-                message: "Error!",
-            },
-        };
+        console.error(`Error`, e.message);
+        next(e);
+    }
+}
+
+async function create(req, res, next) {
+    try {
+        const create = await transaction.create(req.body);
+        res.status(create.status).json(create.body);
+    } catch (e) {
+        console.error(`Error`, e.message);
+        next(e);
     }
 }
 
 module.exports = {
+    get,
     create,
 };

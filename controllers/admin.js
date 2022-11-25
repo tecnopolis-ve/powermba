@@ -1,6 +1,6 @@
 const admin = require("../services/admin");
 
-async function list() {
+async function list(req, res, next) {
     try {
         const result = [];
         return {
@@ -20,7 +20,7 @@ async function list() {
     }
 }
 
-async function get(id) {
+async function get(req, res, next) {
     try {
         const result = null;
         return {
