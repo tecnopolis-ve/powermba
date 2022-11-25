@@ -5,7 +5,7 @@ const transactionSchema = new mongoose.Schema(
         userId: {
             type: mongoose.Types.ObjectId,
         },
-        destinationUser: {
+        destinationAccount: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
