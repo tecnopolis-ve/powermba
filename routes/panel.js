@@ -9,7 +9,7 @@ router.use(checkAuth);
 
 router.get("/connections", connection.list);
 router.get("/connection/:id", connection.get);
-router.post("/connection/:id", connection.create);
+router.post("/connection", connection.create);
 router.put("/connection/:id", connection.update);
 router.post("/transaction", transaction.create);
 
