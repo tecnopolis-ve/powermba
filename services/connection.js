@@ -3,7 +3,9 @@ const User = require("../models/User");
 
 async function list(userId) {
     try {
-        const result = await Connection.find({ userId });
+        const result = await Connection.find({ userId }).populate({
+            path: "user",
+        });
         return {
             status: 200,
             body: {
@@ -23,7 +25,7 @@ async function list(userId) {
 
 async function get(id) {
     try {
-        const result = await Connection.findById(id);
+        const result = await Connection.findById(id).populate({ path: "user" });
         return {
             status: 200,
             body: {
