@@ -30,7 +30,7 @@ async function signup(payload) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
