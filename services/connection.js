@@ -1,10 +1,9 @@
 const Connection = require("../models/Connection");
 const User = require("../models/User");
 
-async function list(payload) {
+async function list(userId) {
     try {
-        const user = payload.user;
-        const result = await Connection.find({ userId: user.id }).exec();
+        const result = await Connection.find({ userId });
         return {
             status: 200,
             body: {
@@ -16,7 +15,7 @@ async function list(payload) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
@@ -36,21 +35,27 @@ async function get(id) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
 }
 
-async function create(connection) {
+async function create(userId, connection) {
     try {
-        const user = connection.user;
-        const contactUser = await User.findOne({
-            accountNumber: connection.accountNumber,
-        });
+        const user = await User.findOne(
+            {
+                accountNumber: connection.accountNumber,
+            },
+            { password: 0 }
+        );
+        if (!user) {
+            throw new Error(`Unable to connect, user not found.`);
+        }
         const item = new Connection({
-            userId: user.id,
-            contactUser,
+            userId,
+            user,
+            status: "PENDING",
         });
         const result = await item.save();
         return {
@@ -65,7 +70,7 @@ async function create(connection) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
@@ -79,7 +84,7 @@ async function update(id, connection) {
         return {
             status: 200,
             body: {
-                message: `Connection created!`,
+                message: `Connection updated!`,
                 data: result,
             },
         };
@@ -88,7 +93,7 @@ async function update(id, connection) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
@@ -100,7 +105,7 @@ async function remove(id) {
         return {
             status: 200,
             body: {
-                message: `Connection created!`,
+                message: `Connection deleted!`,
                 data: result,
             },
         };
@@ -109,26 +114,7 @@ async function remove(id) {
         return {
             status: 500,
             body: {
-                message: "Error!",
-            },
-        };
-    }
-}
-
-async function findByAccountId(accountId) {
-    try {
-        return {
-            status: 200,
-            body: {
-                message: `User created!`,
-            },
-        };
-    } catch (e) {
-        console.log(e);
-        return {
-            status: 500,
-            body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
@@ -140,5 +126,4 @@ module.exports = {
     create,
     update,
     remove,
-    findByAccountId,
 };
