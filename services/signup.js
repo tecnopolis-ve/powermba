@@ -17,12 +17,12 @@ async function signup(payload) {
             password: saltedPassword,
             accountNumber,
         });
-        const savedUser = await user.save();
+        const saved = await user.save();
         return {
             status: 200,
             body: {
                 message: `User created!`,
-                data: { ...savedUser.toObject(), password },
+                data: { ...saved.toObject(), password },
             },
         };
     } catch (e) {
