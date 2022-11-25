@@ -1,11 +1,13 @@
 const Transaction = require("../models/Transaction");
+const Connection = require("../models/Connection");
 
-async function list() {
+async function list(userId) {
     try {
+        const result = await Transaction.find({ userId });
         return {
             status: 200,
             body: {
-                message: `User created!`,
+                result,
             },
         };
     } catch (e) {
@@ -39,12 +41,23 @@ async function get(id) {
     }
 }
 
-async function create(transaction) {
+async function create(userId, transaction) {
     try {
-        const user = transaction.user;
+        const destinationUser = await Connection.findOne(
+            {
+                status: "ACCEPTED",
+            },
+            { "user.password": 0 }
+        ).populate({
+            path: "user",
+            match: { "user.accountNumber": transaction.destinationAccount },
+        });
+        if (!destinationUser) {
+            throw new Error(`Unable to process, user not found.`);
+        }
         const item = new Transaction({
-            userId: user.id,
-            destinationUser: transaction.destinationUser,
+            userId,
+            destinationAccount: destinationUser,
             amount: transaction.amount,
             concept: transaction.concept,
         });
