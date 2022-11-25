@@ -2,7 +2,7 @@ const connection = require("../services/connection");
 
 async function list(req, res, next) {
     try {
-        const list = await connection.list();
+        const list = await connection.list(req.session.user.id);
         res.status(list.status).json(list.body);
     } catch (e) {
         console.error(`Error`, e.message);
@@ -22,7 +22,7 @@ async function get(req, res, next) {
 
 async function create(req, res, next) {
     try {
-        const create = await connection.create(req.body);
+        const create = await connection.create(req.session.user.id, req.body);
         res.status(create.status).json(create.body);
     } catch (e) {
         console.error(`Error`, e.message);
@@ -32,7 +32,7 @@ async function create(req, res, next) {
 
 async function update(req, res, next) {
     try {
-        const update = await connection.update(req.body);
+        const update = await connection.update(req.params.id, req.body);
         res.status(update.status).json(update.body);
     } catch (e) {
         console.error(`Error`, e.message);

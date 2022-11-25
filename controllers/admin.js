@@ -14,7 +14,7 @@ async function list(req, res, next) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
@@ -34,7 +34,7 @@ async function get(req, res, next) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
