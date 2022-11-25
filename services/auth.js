@@ -9,8 +9,6 @@ async function login(payload) {
             accountNumber: payload.accountNumber,
         });
 
-        console.log(user);
-
         const validPassword = await bcrypt.compare(
             payload.password,
             user.password
@@ -47,7 +45,7 @@ async function login(payload) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }

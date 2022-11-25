@@ -13,7 +13,7 @@ async function list() {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
@@ -33,7 +33,7 @@ async function get(id) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
@@ -61,7 +61,7 @@ async function create(transaction) {
         return {
             status: 500,
             body: {
-                message: "Error!",
+                message: e.message,
             },
         };
     }
