@@ -12,7 +12,7 @@ async function get(req, res, next) {
 
 async function create(req, res, next) {
     try {
-        const create = await transaction.create(req.body);
+        const create = await transaction.create(req.session.user.id, req.body);
         res.status(create.status).json(create.body);
     } catch (e) {
         console.error(`Error`, e.message);
