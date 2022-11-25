@@ -78,9 +78,15 @@ async function create(userId, connection) {
 
 async function update(id, connection) {
     try {
-        const result = await Connection.findByIdAndUpdate(id, {
-            status: connection.status,
-        });
+        const result = await Connection.findByIdAndUpdate(
+            id,
+            {
+                status: connection.status,
+            },
+            {
+                new: true,
+            }
+        );
         return {
             status: 200,
             body: {
