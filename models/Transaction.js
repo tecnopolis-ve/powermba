@@ -4,11 +4,11 @@ const transactionSchema = new mongoose.Schema(
     {
         userId: {
             type: mongoose.Types.ObjectId,
+            required: true,
         },
         destinationAccount: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
         },
         amount: {
             type: Number,
