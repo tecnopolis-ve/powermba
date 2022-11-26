@@ -165,7 +165,7 @@ async function remove(id) {
         await session.withTransaction(async () => {
             await Connection.deleteOne(
                 {
-                    _id: connectionRequest.id,
+                    _id: connectionRequest._id,
                 },
                 { session }
             );
@@ -176,7 +176,7 @@ async function remove(id) {
                 };
             } else {
                 deletionFilter = {
-                    connectionSource: connectionRequest.id,
+                    connectionSource: connectionRequest._id,
                 };
             }
             await Connection.deleteOne(deletionFilter, { session });
