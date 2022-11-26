@@ -4,6 +4,7 @@ const connectionSchema = new mongoose.Schema(
     {
         userId: {
             type: mongoose.Types.ObjectId,
+            required: true,
         },
         user: {
             type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +14,12 @@ const connectionSchema = new mongoose.Schema(
         status: {
             type: String,
             enum: ["PENDING", "ACCEPTED", "DECLINED"],
+            required: true,
         },
+        connectionSource: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Connection",
+        }
     },
     { timestamps: true }
 );
