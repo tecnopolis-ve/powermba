@@ -6,7 +6,7 @@ async function list(userId) {
     try {
         const result = await Connection.find({ userId }).populate("user", {
             password: 0,
-        });
+        }).sort('-createdAt');
         return {
             status: 200,
             body: {
