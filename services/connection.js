@@ -1,10 +1,11 @@
 const Connection = require("../models/Connection");
 const User = require("../models/User");
+const mongoose = require("mongoose");
 
 async function list(userId) {
     try {
-        const result = await Connection.find({ userId }).populate({
-            path: "user",
+        const result = await Connection.find({ userId }).populate("user", {
+            password: 0,
         });
         return {
             status: 200,
@@ -25,7 +26,9 @@ async function list(userId) {
 
 async function get(id) {
     try {
-        const result = await Connection.findById(id).populate({ path: "user" });
+        const result = await Connection.findById(id).populate("user", {
+            password: 0,
+        });
         return {
             status: 200,
             body: {
@@ -45,26 +48,52 @@ async function get(id) {
 
 async function create(userId, connection) {
     try {
-        const user = await User.findOne(
+        const targetUser = await User.findOne(
             {
                 accountNumber: connection.accountNumber,
             },
             { password: 0 }
         );
-        if (!user) {
+        if (!targetUser) {
             throw new Error(`Unable to connect, user not found.`);
         }
-        const item = new Connection({
+        const currentConnection = await Connection.findOne({
             userId,
-            user,
-            status: "PENDING",
+            user: targetUser,
+            status: { $in: ["PENDING", "ACCEPTED"] },
         });
-        const result = await item.save();
+        if (currentConnection) {
+            throw new Error(`Unable to connect, a connection already exists.`);
+        }
+        const session = await mongoose.startSession();
+        await session.withTransaction(async () => {
+            const connectionSource = await Connection.create(
+                [
+                    {
+                        userId,
+                        user: targetUser,
+                        status: "PENDING",
+                    },
+                ],
+                { session }
+            );
+            await Connection.create(
+                [
+                    {
+                        userId: targetUser,
+                        user: userId,
+                        status: "PENDING",
+                        connectionSource: connectionSource[0],
+                    },
+                ],
+                { session }
+            );
+        });
+        session.endSession();
         return {
             status: 200,
             body: {
-                message: `Connection created!`,
-                data: result.toObject(),
+                message: `Connection request created!`,
             },
         };
     } catch (e) {
@@ -80,20 +109,34 @@ async function create(userId, connection) {
 
 async function update(id, connection) {
     try {
-        const result = await Connection.findByIdAndUpdate(
-            id,
-            {
-                status: connection.status,
-            },
-            {
-                new: true,
-            }
-        );
+        const connectionRequest = await Connection.findById(id);
+        console.log(connectionRequest);
+        const session = await mongoose.startSession();
+        await session.withTransaction(async () => {
+            await Connection.updateOne(
+                {
+                    _id: connectionRequest?.id,
+                },
+                {
+                    status: connection.status,
+                },
+                { session }
+            );
+            await Connection.updateOne(
+                {
+                    _id: connectionRequest?.connectionSource,
+                },
+                {
+                    status: connection.status,
+                },
+                { session }
+            );
+        });
+        session.endSession();
         return {
             status: 200,
             body: {
-                message: `Connection updated!`,
-                data: result,
+                message: `Connection request ${connection.status}!`,
             },
         };
     } catch (e) {
