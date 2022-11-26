@@ -1,30 +1,21 @@
-const User = require("../models/User");
+const Transaction = require("../models/Transaction");
 
-async function list() {
+async function dashboard() {
     try {
+        const result = await Transaction.aggregate([
+            {
+                $group: {
+                    _id: "FEES",
+                    total: {
+                        $sum: "$fees",
+                    },
+                },
+            },
+        ]);
         return {
             status: 200,
             body: {
-                message: `User created!`,
-            },
-        };
-    } catch (e) {
-        console.log(e);
-        return {
-            status: 500,
-            body: {
-                message: e.message,
-            },
-        };
-    }
-}
-
-async function get(id) {
-    try {
-        return {
-            status: 200,
-            body: {
-                message: `User created!`,
+                result,
             },
         };
     } catch (e) {
@@ -39,6 +30,5 @@ async function get(id) {
 }
 
 module.exports = {
-    list,
-    get,
+    dashboard,
 };
