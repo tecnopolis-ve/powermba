@@ -1,5 +1,15 @@
 const transaction = require("../services/transaction");
 
+async function list(req, res, next) {
+    try {
+        const get = await transaction.list(req.session.user._id);
+        res.status(get.status).json(get.body);
+    } catch (e) {
+        console.error(`Error`, e.message);
+        next(e);
+    }
+}
+
 async function get(req, res, next) {
     try {
         const get = await transaction.get(req.params.id);
@@ -21,6 +31,7 @@ async function create(req, res, next) {
 }
 
 module.exports = {
+    list,
     get,
     create,
 };
