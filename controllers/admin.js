@@ -1,34 +1,9 @@
 const admin = require("../services/admin");
 
-async function list(req, res, next) {
+async function dashboard(req, res, next) {
     try {
-        const result = [];
-        return {
-            status: 200,
-            body: {
-                result,
-            },
-        };
-    } catch (e) {
-        console.log(e);
-        return {
-            status: 500,
-            body: {
-                message: e.message,
-            },
-        };
-    }
-}
-
-async function get(req, res, next) {
-    try {
-        const result = null;
-        return {
-            status: 200,
-            body: {
-                result,
-            },
-        };
+        const get = await admin.dashboard();
+        res.status(get.status).json(get.body);
     } catch (e) {
         console.log(e);
         return {
@@ -41,6 +16,5 @@ async function get(req, res, next) {
 }
 
 module.exports = {
-    list,
-    get,
+    dashboard,
 };
