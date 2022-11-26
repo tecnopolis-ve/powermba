@@ -110,12 +110,14 @@ async function create(userId, connection) {
 async function update(id, connection) {
     try {
         const connectionRequest = await Connection.findById(id);
-        console.log(connectionRequest);
+        if (!connectionRequest) {
+            throw new Error(`Unable to connect, connection not found.`);
+        }
         const session = await mongoose.startSession();
         await session.withTransaction(async () => {
             await Connection.updateOne(
                 {
-                    _id: connectionRequest?.id,
+                    _id: connectionRequest.id,
                 },
                 {
                     status: connection.status,
@@ -124,7 +126,7 @@ async function update(id, connection) {
             );
             await Connection.updateOne(
                 {
-                    _id: connectionRequest?.connectionSource,
+                    _id: connectionRequest.connectionSource,
                 },
                 {
                     status: connection.status,
@@ -152,12 +154,36 @@ async function update(id, connection) {
 
 async function remove(id) {
     try {
-        const result = await Connection.deleteOne({ id });
+        const connectionRequest = await Connection.findById(id);
+        if (!connectionRequest) {
+            throw new Error(`Unable to connect, connection not found.`);
+        }
+        const session = await mongoose.startSession();
+        await session.withTransaction(async () => {
+            await Connection.deleteOne(
+                {
+                    _id: connectionRequest.id,
+                },
+                { session }
+            );
+            let deletionFilter;
+            if (connectionRequest.connectionSource) {
+                deletionFilter = {
+                    _id: connectionRequest.connectionSource,
+                };
+            } else {
+                deletionFilter = {
+                    connectionSource: connectionRequest.id,
+                };
+            }
+            await Connection.deleteOne(deletionFilter, { session });
+        });
+        session.endSession();
         return {
             status: 200,
             body: {
                 message: `Connection deleted!`,
-                data: result,
+                data: connectionRequest,
             },
         };
     } catch (e) {
