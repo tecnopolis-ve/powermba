@@ -11,7 +11,18 @@ const {
 async function list(userId) {
     try {
         console.log(userId);
-        const result = await Transaction.find({ userAccount: userId }).sort('-createdAt');
+        const result = await Transaction.find({ userAccount: userId })
+            .populate("destinationAccount", {
+                name: 1,
+                lastName: 1,
+                accountNumber: 1,
+            })
+            .populate("originAccount", {
+                name: 1,
+                lastName: 1,
+                accountNumber: 1,
+            })
+            .sort("-createdAt");
         return {
             status: 200,
             body: {
@@ -31,7 +42,17 @@ async function list(userId) {
 
 async function get(id) {
     try {
-        const result = await Transaction.findById(id);
+        const result = await Transaction.findById(id)
+            .populate("destinationAccount", {
+                name: 1,
+                lastName: 1,
+                accountNumber: 1,
+            })
+            .populate("originAccount", {
+                name: 1,
+                lastName: 1,
+                accountNumber: 1,
+            });
         return {
             status: 200,
             body: {
