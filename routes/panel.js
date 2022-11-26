@@ -12,7 +12,8 @@ router.get("/connection/:id", connection.get);
 router.post("/connection", connection.create);
 router.put("/connection/:id", connection.update);
 router.delete("/connection/:id", connection.remove);
-router.post("/transaction", transaction.create);
 router.get("/transactions", transaction.list);
+router.get("/transaction/:id", transaction.get);
+router.post("/transaction", transaction.create);
 
 module.exports = router;
