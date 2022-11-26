@@ -109,7 +109,10 @@ async function create(userId, connection) {
 
 async function update(id, connection) {
     try {
-        const connectionRequest = await Connection.findById(id);
+        const connectionRequest = await Connection.findOne({
+            _id: id,
+            connectionSource: { $exists: true },
+        });
         if (!connectionRequest) {
             throw new Error(`Unable to connect, connection not found.`);
         }
