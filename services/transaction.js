@@ -10,7 +10,7 @@ const {
 
 async function list(userId) {
     try {
-        const result = await Transaction.find({ userId });
+        const result = await Transaction.find({ userAccount: userId }).sort('-createdAt');
         return {
             status: 200,
             body: {
