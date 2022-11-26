@@ -16,6 +16,7 @@ async function signup(payload) {
             dob: payload.dob,
             password: saltedPassword,
             accountNumber,
+            balance: payload.balance,
         });
         const saved = await user.save();
         return {
