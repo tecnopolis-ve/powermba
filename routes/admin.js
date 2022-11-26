@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.use(checkAuth);
 
-router.get("/accounts", admin.list);
-router.get("/account/:id", admin.get);
+router.get("/dashboard", admin.dashboard);
 
 module.exports = router;
