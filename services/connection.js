@@ -1,6 +1,6 @@
+const mongoose = require("mongoose");
 const Connection = require("../models/Connection");
 const User = require("../models/User");
-const mongoose = require("mongoose");
 
 async function list(userId) {
     try {
