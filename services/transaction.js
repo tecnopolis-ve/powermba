@@ -43,25 +43,22 @@ async function get(id) {
 
 async function create(userId, transaction) {
     try {
-        const destinationUser = await Connection.findOne(
-            {
-                status: "ACCEPTED",
-            },
-            { "user.password": 0 }
-        ).populate({
+        const destinationUser = await Connection.findOne({
+            status: "ACCEPTED",
+        }).populate({
             path: "user",
             match: { "user.accountNumber": transaction.destinationAccount },
         });
         if (!destinationUser) {
             throw new Error(`Unable to process, user not found.`);
         }
-        const item = new Transaction({
+        const newTransaction = new Transaction({
             userId,
             destinationAccount: destinationUser,
             amount: transaction.amount,
             concept: transaction.concept,
         });
-        const result = await item.save();
+        const result = await newTransaction.save();
         return {
             status: 200,
             body: {
