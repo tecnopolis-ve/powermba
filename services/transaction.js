@@ -1,6 +1,12 @@
+const mongoose = require("mongoose");
 const Transaction = require("../models/Transaction");
 const Connection = require("../models/Connection");
-const { checkBalance, updateBalance } = require("./balance");
+const {
+    checkBalance,
+    updateBalance,
+    calculateFees,
+    calculateAmountFees,
+} = require("./balance");
 
 async function list(userId) {
     try {
@@ -61,15 +67,38 @@ async function create(userId, transaction) {
         if (!destinationAccount) {
             throw new Error(`Unable to process, user not found.`);
         }
-        const newTransaction = new Transaction({
-            userId,
-            destinationAccount: destinationAccount,
-            amount: transaction.amount,
-            concept: transaction.concept,
+        let result;
+        const session = await mongoose.startSession();
+        await session.withTransaction(async () => {
+            const inboundTransaction = new Transaction({
+                userAccount: destinationAccount,
+                originAccount: userId,
+                amount: transaction.amount,
+                fees: 0,
+                concept: transaction.concept,
+                type: "INBOUND",
+            });
+            await inboundTransaction.save();
+            const outboundTransaction = new Transaction({
+                userAccount: userId,
+                destinationAccount: destinationAccount,
+                amount: -transaction.amount,
+                fees: calculateFees(transaction.amount),
+                concept: transaction.concept,
+                type: "OUTBOUND",
+            });
+            result = await outboundTransaction.save();
+            await updateBalance(
+                userId,
+                calculateAmountFees(transaction.amount)
+            );
+            await updateBalance(
+                destinationAccount.user._id,
+                transaction.amount
+            );
         });
-        const result = await newTransaction.save();
-        await updateBalance(userId, -transaction.amount);
-        await updateBalance(destinationAccount.user._id, transaction.amount);
+        session.endSession();
+
         return {
             status: 200,
             body: {
