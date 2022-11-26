@@ -10,6 +10,7 @@ const {
 
 async function list(userId) {
     try {
+        console.log(userId);
         const result = await Transaction.find({ userAccount: userId }).sort('-createdAt');
         return {
             status: 200,
@@ -71,7 +72,7 @@ async function create(userId, transaction) {
         const session = await mongoose.startSession();
         await session.withTransaction(async () => {
             const inboundTransaction = new Transaction({
-                userAccount: destinationAccount,
+                userAccount: destinationAccount.user._id,
                 originAccount: userId,
                 amount: transaction.amount,
                 fees: 0,
@@ -81,7 +82,7 @@ async function create(userId, transaction) {
             await inboundTransaction.save();
             const outboundTransaction = new Transaction({
                 userAccount: userId,
-                destinationAccount: destinationAccount,
+                destinationAccount: destinationAccount.user._id,
                 amount: -transaction.amount,
                 fees: calculateFees(transaction.amount),
                 concept: transaction.concept,
